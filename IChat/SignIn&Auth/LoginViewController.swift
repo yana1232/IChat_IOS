@@ -7,11 +7,6 @@
 
 import UIKit
 
-protocol AuthNavigatingDelegate: class {
-    func toLoginVC()
-    func toSignUpVC()
-    
-}
 
 class LoginViewController: UIViewController {
     
@@ -55,7 +50,7 @@ class LoginViewController: UIViewController {
                 
             case .success(let user):
                 self.showAlert(with: "Success!", and: "You are authorized") {
-                    self.present(SetupProfileViewController(), animated: true, completion: nil)
+                    self.present(SetupProfileViewController(currentUser: user), animated: true, completion: nil)
                 }
                 print(user.email)
             case .failure(let error):

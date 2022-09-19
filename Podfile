@@ -7,5 +7,6 @@ target 'IChat' do
 
 pod 'Firebase/Core'
 pod 'Firebase/Auth'
+pod 'FirebaseFirestore'
 
 end

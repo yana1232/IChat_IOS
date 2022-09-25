@@ -11,26 +11,24 @@ class Validators {
     
     static func isFilled(email: String?, password: String?, confirmPassword: String?) -> Bool {
         guard let password = password,
-        let email = email,
         let confirmPassword = confirmPassword,
-        email != "",
+        let email = email,
         password != "",
-        confirmPassword != ""
-        else {
-            return false
+        confirmPassword != "",
+            email != "" else {
+                return false
         }
         return true
     }
     
-    static func isFilled(username: String?, descriprion: String?, sex: String?) -> Bool {
-        guard let descriprion = descriprion,
-        let username = username,
+    static func isFilled(username: String?, description: String?, sex: String?) -> Bool {
+        guard let description = description,
         let sex = sex,
-              username != "",
-              descriprion != "",
-              sex != ""
-        else {
-            return false
+        let username = username,
+        description != "",
+        sex != "",
+            username != "" else {
+                return false
         }
         return true
     }

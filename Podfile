@@ -5,8 +5,12 @@ target 'IChat' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
-pod 'Firebase/Core'
 pod 'Firebase/Auth'
 pod 'FirebaseFirestore'
+pod 'Firebase/Analytics'
+pod 'Firebase/Storage', '9.0'
+pod 'SDWebImage', '~> 5.0'
+pod 'GoogleSignIn'
+
 
 end

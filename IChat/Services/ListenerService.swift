@@ -50,4 +50,84 @@ class ListenerService {
         }
         return usersListener
     }
+    
+    func waitingChatsObserve(chat: [MChat], completion: @escaping (Result<[MChat], Error>) -> Void) -> ListenerRegistration? {
+        var chats = chat
+        let chatRef = db.collection(["users", currentUserId, "waitingChats"].joined(separator: "/"))
+        var chatListener = chatRef.addSnapshotListener { ( querySnapshot, error) in
+            guard let snapshot = querySnapshot else {
+                completion(.failure(error!))
+                return
+            }
+            
+            snapshot.documentChanges.forEach { (diff) in
+                guard let chat = MChat(document: diff.document) else { return }
+                                       switch diff.type {
+                case .added:
+                    guard !chats.contains(chat) else { return }
+                    chats.append(chat)
+                case .modified:
+                    guard let index = chats.firstIndex(of: chat) else { return }
+                    chats[index] = chat
+                case .removed:
+                    guard let index = chats.firstIndex(of: chat) else { return }
+                    chats.remove(at: index)
+                }
+            }
+            completion(.success(chats))
+        }
+        
+        return chatListener
+    }
+    
+    func activeChatsObserve(chat: [MChat], completion: @escaping (Result<[MChat], Error>) -> Void) -> ListenerRegistration? {
+        var chats = chat
+        let chatRef = db.collection(["users", currentUserId, "activeChats"].joined(separator: "/"))
+        var chatListener = chatRef.addSnapshotListener { ( querySnapshot, error) in
+            guard let snapshot = querySnapshot else {
+                completion(.failure(error!))
+                return
+            }
+            
+            snapshot.documentChanges.forEach { (diff) in
+                guard let chat = MChat(document: diff.document) else { return }
+                switch diff.type {
+                case .added:
+                    guard !chats.contains(chat) else { return }
+                    chats.append(chat)
+                case .modified:
+                    guard let index = chats.firstIndex(of: chat) else { return }
+                    chats[index] = chat
+                case .removed:
+                    guard let index = chats.firstIndex(of: chat) else { return }
+                    chats.remove(at: index)
+                }
+            }
+            completion(.success(chats))
+        }
+        
+        return chatListener
+    }
+    
+    func messagesObserve(chat: MChat, completion: @escaping (Result<MMessage, Error>) -> Void) -> ListenerRegistration? {
+        let ref = usersRef.document(currentUserId).collection("activeChats").document(chat.friendId).collection("messages")
+        let messagesListener = ref.addSnapshotListener { (querySnapshot, error) in
+            guard let snapshot = querySnapshot else {
+                completion(.failure(error!))
+                return
+            }
+            snapshot.documentChanges.forEach { (diff) in
+                guard let message = MMessage(document: diff.document) else { return }
+                switch diff.type {
+                case .added:
+                    completion(.success(message))
+                case .modified:
+                    break
+                case .removed:
+                    break
+                }
+            }
+        }
+        return messagesListener
+    }
 }
